@@ -1,23 +1,10 @@
 {% extends "layout.html" %}
 {% block body %}
-
-{% for instance in instances %}
-<div class="instance">
-<h2 style="clear: both;">{{ instance.title }}</h2>
-<div style="float: left">
-<a href="https://{{ instance.uri }}">
-{% if instance.thumbnail -%}
-<img src={{ instance.thumbnail }} style="width: 300px">
-{% else %}
-{{ instance.uri }}
-{% endif %}
-</a>
-</div>
-{% autoescape false %}
-{{ instance.description }}
-{% endautoescape %}
-</div>
-{% endfor %}
-
+<h1>EmojoDB</h1>
+<form method="POST" action="instance">
+<label for="instance">Look up instance:</label>
+<input type="text" name="instance" id="instance">
+<input type="submit" value="Go">
+</form>
 {% endblock body %}
 

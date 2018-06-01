@@ -58,6 +58,8 @@ def import_instance(uri):
         else:
             os.remove(fullpath)
         
+        db.session.flush()
+        
         if emoji in instance.emoji:
             # TODO: changes to "hidden" should update last_touched
             a = instanceHasEmoji.update().where(instanceHasEmoji.c.emoji_id==emoji.id and instanceHasEmoji.c.instance_id==instance.id).values(hidden=not emojidata['visible_in_picker'])

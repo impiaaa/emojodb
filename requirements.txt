@@ -1,3 +1,4 @@
+bleach
 Flask-SQLAlchemy
 Flask-Uploads
 ImageHash

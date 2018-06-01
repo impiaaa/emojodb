@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block title %} - {{ instance.uri }}{% endblock title %}
+{% block body %}
+<header class="instance">
+<h2>{{ instance.title }}</h2>
+<div style="float: left">
+<a href="https://{{ instance.uri }}">
+{% if instance.thumbnail -%}
+<img src={{ instance.thumbnail }} style="width: 300px">
+{% else %}
+{{ instance.uri }}
+{% endif %}
+</a>
+</div>
+{{ instance.description|strip }}
+</header>
+<dl class="emojilist" style="clear: both">
+{% for emoji in instance.emoji %}
+<div class="emoji">
+<dt>
+<img src="{{ emoji.imgsrc }}" alt=":{{ emoji.shortcode }}:">
+</dt>
+<dd>
+:{{ emoji.shortcode }}:
+</dd>
+</div>
+{% endfor %}
+</dl>
+{% endblock body %}
+

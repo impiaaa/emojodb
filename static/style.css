@@ -1,0 +1,35 @@
+body {
+    font-family: sans-serif;
+    background-color: #eee;
+    color: #000;
+}
+
+a {
+    color: #111;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #555;
+}
+
+.emojilist {
+    column-width: 200px;
+    column-gap: 20px;
+}
+
+.emoji img {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+.emoji dt {
+    display: table-cell;
+    padding: 4px;
+}
+
+.emoji dd {
+    display: table-cell;
+}
+
