@@ -12,4 +12,5 @@ uploaded_photos = UploadSet('photos', IMAGES)
 configure_uploads(app, uploaded_photos)
 
 import routes
+from instance_import import import_instance
 
