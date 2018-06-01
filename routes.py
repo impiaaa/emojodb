@@ -1,4 +1,4 @@
-from emojodb import app
+from app import app
 from models import Instance, Emoji, instanceHasEmoji
 from flask import render_template
 

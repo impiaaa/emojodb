@@ -1,4 +1,5 @@
-from emojodb import db, Emoji, Instance
+from models import Emoji, Instance
+from app import db
 import json
 from urllib.request import urlopen
 

@@ -1,4 +1,4 @@
-from emojodb import db, uploaded_photos
+from app import db, uploaded_photos
 
 HASH_LENGTH = 8
 
