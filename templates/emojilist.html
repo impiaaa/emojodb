@@ -1,6 +1,6 @@
 {% macro emojilist(emoji, clear=False) -%}
 {% if emoji %}
-<dl class="emojilist" {% if clear %}style="clear: both"{% endif %}>
+<dl class="emojilist" {% if clear %} style="clear: both" {% endif %}>
 {% for emojum in emoji %}
 <div class="emoji">
 <dt>
@@ -17,9 +17,8 @@
 {% endfor %}
 </dl>
 {% else %}
-<p>
+<p {% if clear %} style="clear: both" {% endif %}>
 No emoji found!
 </p>
 {% endif %}
 {%- endmacro %}
-

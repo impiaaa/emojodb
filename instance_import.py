@@ -2,6 +2,7 @@ import click, imagehash, json, os, tempfile
 from app import app, db, uploaded_photos
 from models import Emoji, Instance, HASH_LENGTH, instanceHasEmoji
 from PIL import Image
+from urllib.error import URLError
 from urllib.request import urlopen
 from urllib.parse import urlparse
 from werkzeug.datastructures import FileStorage
@@ -47,24 +48,28 @@ def getInstanceEmoji(instanceOrUri):
     
     for emojidata in getjson(instance.uri, 'custom_emojis'):
         print("Loading :{}:".format(emojidata['shortcode']))
-        with urlopen(emojidata['url']) as doc:
-            headers = doc.info()
-            basename = urlparse(emojidata['url']).path
-            basename = basename[basename.rfind('/')+1:]
-            
-            tmp = tempfile.TemporaryFile('wb+')
-            tmp.write(doc.read())
-            tmp.seek(0)
-            
-            storage = FileStorage(tmp, basename, headers=headers)
-            filename = uploaded_photos.save(storage)
+        try:
+            with urlopen(emojidata['url']) as doc:
+                headers = doc.info()
+                basename = urlparse(emojidata['url']).path
+                basename = basename[basename.rfind('/')+1:]
+                
+                tmp = tempfile.TemporaryFile('wb+')
+                tmp.write(doc.read())
+                tmp.seek(0)
+                
+                storage = FileStorage(tmp, basename, headers=headers)
+                filename = uploaded_photos.save(storage)
+        except URLError as e:
+            print(e)
+            continue
         fullpath = os.path.join(uploaded_photos.config.destination, filename)
         hash = imagehash.average_hash(Image.open(fullpath), hash_size=HASH_LENGTH).hash
         
         emoji = Emoji.query.filter_by(shortcode=emojidata['shortcode'], hash=hash).first()
         if emoji is None:
             # TODO: Emoji with the same image hash should use the same file
-            print("Adding emoji to DB")
+            print("Adding :{}: to DB".format(emojidata['shortcode']))
             emoji = Emoji(shortcode=emojidata['shortcode'], hash=hash, filename=filename)
             db.session.add(emoji)
         else:
@@ -76,7 +81,7 @@ def getInstanceEmoji(instanceOrUri):
             # TODO: changes to "hidden" should update last_touched
             a = instanceHasEmoji.update().where(instanceHasEmoji.c.emoji_id==emoji.id and instanceHasEmoji.c.instance_id==instance.id).values(hidden=not emojidata['visible_in_picker'])
         else:
-            print("Adding emoji to instance")
+            print("Adding :{emoji}: to {instance}".format(emoji=emoji.shortcode, instance=instance.uri))
             a = instanceHasEmoji.insert().values(emoji_id=emoji.id,
                                                  instance_id=instance.id,
                                                  hidden=not emojidata['visible_in_picker'],
@@ -87,8 +92,11 @@ def getInstanceEmoji(instanceOrUri):
     
     for emoji in instance.emoji:
         if emoji not in addedEmoji:
-            print("Removing :{}:".format(emoji.shortcode))
-            db.session.delete(emoji)
+            print("Removing :{emoji}: from {instance}".format(emoji=emoji.shortcode, instance=instance.uri))
+            instanceHasEmoji.delete().where(emoji_id=emoji.id,
+                                            instance_id=instance.id)
+    
+    print("Done fetching emoji for {}".format(instance.uri))
     
     instance.pending = False
     
