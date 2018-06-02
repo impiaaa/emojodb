@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block title %} - Search{% endblock title %}
+{% block body %}
+<header>
+<h2>Search: {{ shortcode }}</h2>
+</header>
+{% from 'emojilist.html' import emojilist %}
+{{ emojilist(emoji) }}
+{% endblock body %}
+

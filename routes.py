@@ -1,8 +1,9 @@
 import jinja2
-from app import app
+from app import app, db
 from bleach import clean
 from flask import abort, redirect, render_template, request, url_for
 from models import Instance, Emoji
+from sqlalchemy import text
 
 def sanitize_html(text):
     return jinja2.Markup(scrubber.Scrubber().scrub(text))
@@ -30,4 +31,10 @@ def emoji(id):
     emoji = Emoji.query.filter_by(id=id).first()
     if emoji is None: abort(404)
     return render_template('emoji.html', emoji=emoji)
+
+@app.route('/emoji', methods=['POST'])
+def emojisearch():
+    emoji = db.session.query(Emoji).filter(Emoji.shortcode.ilike(text("'%' || :query || '%'"))).params(query=request.form['query']).all()
+    if len(emoji) == 1: return redirect(url_for('emoji', id=emoji[0].id))
+    else: return render_template('emojisearch.html', emoji=emoji, shortcode=request.form['query'])
 

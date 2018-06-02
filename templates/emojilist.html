@@ -1,0 +1,25 @@
+{% macro emojilist(emoji, clear=False) -%}
+{% if emoji %}
+<dl class="emojilist" {% if clear %}style="clear: both"{% endif %}>
+{% for emojum in emoji %}
+<div class="emoji">
+<dt>
+<a href="{{ url_for('emoji', id=emojum.id) }}">
+<img src="{{ emojum.imgsrc }}" alt=":{{ emojum.shortcode }}:">
+</a>
+</dt>
+<dd>
+<a href="{{ url_for('emoji', id=emojum.id) }}">
+:{{ emojum.shortcode }}:
+</a>
+</dd>
+</div>
+{% endfor %}
+</dl>
+{% else %}
+<p>
+No emoji found!
+</p>
+{% endif %}
+{%- endmacro %}
+

@@ -14,21 +14,7 @@
 </div>
 {{ instance.description|strip }}
 </header>
-<dl class="emojilist" style="clear: both">
-{% for emoji in instance.emoji %}
-<div class="emoji">
-<dt>
-<a href="{{ url_for('emoji', id=emoji.id) }}">
-<img src="{{ emoji.imgsrc }}" alt=":{{ emoji.shortcode }}:">
-</a>
-</dt>
-<dd>
-<a href="{{ url_for('emoji', id=emoji.id) }}">
-:{{ emoji.shortcode }}:
-</a>
-</dd>
-</div>
-{% endfor %}
-</dl>
+{% from 'emojilist.html' import emojilist %}
+{{ emojilist(instance.emoji, clear=True) }}
 {% endblock body %}
 

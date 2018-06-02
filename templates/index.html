@@ -1,10 +1,15 @@
 {% extends "layout.html" %}
 {% block body %}
 <h1>EmojoDB</h1>
-<form method="POST" action="instance">
+<form method="POST" action="{{ url_for('instanceredir') }}">
 <label for="instance">Look up instance:</label>
-<input type="text" name="instance" id="instance">
+<input type="text" name="instance" id="instance" placeholder="mastodon.social">
 <input type="submit" value="Go">
+</form>
+<form method="POST" action="{{ url_for('emojisearch') }}">
+<label for="shortcode">Search emoji by shortcode:</label>
+<input type="text" name="query" id="shortcode" placeholder="blobpats">
+<input type="submit" value="Search">
 </form>
 {% endblock body %}
 
