@@ -15,9 +15,7 @@ def getjson(uri, method):
         codec = params['charset']
         return json.loads(doc.read().decode(codec))
 
-@app.cli.command()
-@click.argument("uri")
-def import_instance(uri):
+def getInstanceInfo(uri):
     print("Getting information on {}".format(uri))
     instancedata = getjson(uri, 'instance')
     
@@ -29,6 +27,14 @@ def import_instance(uri):
     for k, v in instancedata.items():
         setattr(instance, k, v)
     
+    db.session.commit()
+    
+    return instance
+
+@app.cli.command()
+@click.argument("uri")
+def import_instance(uri):
+    instance = getInstanceInfo(uri)
     print("Set instance info, loading emoji")
     
     addedEmoji = []
