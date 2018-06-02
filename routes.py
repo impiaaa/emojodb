@@ -34,7 +34,10 @@ def emoji(id):
 
 @app.route('/emoji', methods=['POST'])
 def emojisearch():
-    emoji = db.session.query(Emoji).filter(Emoji.shortcode.ilike(text("'%' || :query || '%'"))).params(query=request.form['query']).all()
+    emoji = db.session.query(Emoji)\
+                      .filter(Emoji.shortcode.ilike(text("'%' || :query || '%'"))).params(query=request.form['query'])\
+                      .order_by(Emoji.shortcode)\
+                      .all()
     if len(emoji) == 1: return redirect(url_for('emoji', id=emoji[0].id))
     else: return render_template('emojisearch.html', emoji=emoji, shortcode=request.form['query'])
 
