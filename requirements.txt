@@ -1,5 +1,5 @@
-bleach
-Flask-APScheduler
-Flask-SQLAlchemy
-Flask-Uploads
-ImageHash
+bleach ~= 2.1.3
+Flask-APScheduler ~= 1.8.0
+Flask-SQLAlchemy ~= 2.3.2
+Flask-Uploads ~= 0.2.1
+ImageHash ~= 4.0
