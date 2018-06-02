@@ -1,12 +1,13 @@
-import apscheduler, click, imagehash, json, os, tempfile
+import apscheduler, boto3, click, imagehash, json, os, tempfile
 from app import app, db, uploaded_photos
+from datetime import datetime
 from models import Emoji, Instance, HASH_LENGTH, instanceHasEmoji
 from PIL import Image
 from urllib.error import URLError
 from urllib.request import urlopen
 from urllib.parse import urlparse
-from werkzeug.datastructures import FileStorage
-from datetime import datetime
+from uuid import uuid4
+from werkzeug.utils import secure_filename
 
 def getjson(uri, method):
     assert uri.islower()
@@ -65,34 +66,38 @@ def getInstanceEmoji(instanceOrUri):
     
     addedEmoji = []
     
+    s3 = boto3.client('s3')
+    
     for emojidata in getjson(instance.uri, 'custom_emojis'):
         print("Loading :{}:".format(emojidata['shortcode']))
-        try:
-            with urlopen(emojidata['url']) as doc:
-                headers = doc.info()
-                basename = urlparse(emojidata['url']).path
-                basename = basename[basename.rfind('/')+1:]
-                
-                tmp = tempfile.TemporaryFile('wb+')
-                tmp.write(doc.read())
-                tmp.seek(0)
-                
-                storage = FileStorage(tmp, basename, headers=headers)
-                filename = uploaded_photos.save(storage)
-        except URLError as e:
-            print(e)
-            continue
-        fullpath = os.path.join(uploaded_photos.config.destination, filename)
-        hash = gethash(fullpath)
+        with tempfile.TemporaryFile('wb+') as tmp:
+            try:
+                with urlopen(emojidata['url']) as doc:
+                    headers = doc.info()
+                    tmp.write(doc.read())
+            except URLError as e:
+                print(e)
+                continue
+            
+            tmp.seek(0)
+            hash = gethash(tmp)
         
-        emoji = Emoji.query.filter_by(shortcode=emojidata['shortcode'], hash=hash).first()
-        if emoji is None:
-            # TODO: Emoji with the same image hash should use the same file
-            print("Adding :{}: to DB".format(emojidata['shortcode']))
-            emoji = Emoji(shortcode=emojidata['shortcode'], hash=hash, filename=filename)
-            db.session.add(emoji)
-        else:
-            os.remove(fullpath)
+            emoji = Emoji.query.filter_by(shortcode=emojidata['shortcode'], hash=hash).first()
+            if emoji is None:
+                urlpath = urlparse(emojidata['url']).path
+                basename = urlpath[urlpath.rfind('/')+1:]
+                source_filename = secure_filename(basename)
+                source_extension = os.path.splitext(source_filename)[1]
+                filename = uuid4().hex + source_extension
+                
+                # TODO: Emoji with the same image hash should use the same file
+                tmp.seek(0)
+                print("Uploading :{emoji}: as {file}".format(emoji=emojidata['shortcode'], file=filename))
+                s3.upload_fileobj(tmp, app.config['S3_BUCKET'], filename)
+                
+                emoji = Emoji(shortcode=emojidata['shortcode'], hash=hash, filename=filename)
+                print("Adding :{}: to DB".format(emojidata['shortcode']))
+                db.session.add(emoji)
         
         db.session.flush()
         

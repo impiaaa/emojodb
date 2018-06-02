@@ -1,4 +1,5 @@
-from app import db, uploaded_photos
+import boto3
+from app import app, db
 
 HASH_LENGTH = 32
 
@@ -8,6 +9,8 @@ instanceHasEmoji = db.Table('instanceHasEmoji',
     db.Column('hidden', db.Boolean),
     db.Column('last_touched', db.DateTime)
 )
+
+s3 = boto3.client('s3')
 
 class Emoji(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -19,7 +22,13 @@ class Emoji(db.Model):
     
     @property
     def imgsrc(self):
-        return uploaded_photos.url(self.filename)
+        return s3.generate_presigned_url(
+            ClientMethod='get_object',
+            Params={
+                'Bucket': app.config['S3_BUCKET'],
+                'Key': self.filename
+            }
+        )
 
 class Instance(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_apscheduler import APScheduler
 from flask_sqlalchemy import SQLAlchemy
-from flask_uploads import UploadSet, configure_uploads, IMAGES
 
 app = Flask("emojodb")
 app.config.from_object('config')
@@ -28,9 +27,6 @@ app.config['JOBS'] = [
 ]
 
 db = SQLAlchemy(app)
-
-uploaded_photos = UploadSet('photos', IMAGES)
-configure_uploads(app, uploaded_photos)
 
 scheduler = APScheduler()
 scheduler.init_app(app)
