@@ -1,4 +1,4 @@
-import jinja2
+import jinja2, re
 from app import app, db
 from bleach import clean
 from flask import abort, redirect, render_template, request, url_for
@@ -16,8 +16,11 @@ def index():
     instances = Instance.query.all()
     return render_template('index.html', instances=instances)
 
+domainNameDisallowed = re.compile(u"[\x00-,/:-@[-`{-\x7f]", flags=re.UNICODE)
+
 @app.route('/instance/<uri>')
 def instancesearch(uri):
+    uri = domainNameDisallowed.sub("", uri.lower())
     instance = Instance.query.filter_by(uri=uri).first()
     if instance is None:
         from instance_import import getInstanceInfo

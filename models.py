@@ -11,7 +11,7 @@ instanceHasEmoji = db.Table('instanceHasEmoji',
 
 class Emoji(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    shortcode = db.Column(db.String, nullable=False, index=True)
+    shortcode = db.Column(db.String(length=80), nullable=False, index=True)
     hash = db.Column(db.LargeBinary(length=HASH_LENGTH), nullable=False)
     filename = db.Column(db.String)
     
@@ -25,7 +25,7 @@ class Instance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     uri = db.Column(db.String(length=100), unique=True, nullable=False, index=True)
     title = db.Column(db.String(length=80))
-    description = db.Column(db.String)
+    description = db.Column(db.String(length=1000))
     email = db.Column(db.String(length=80))
     version = db.Column(db.String(length=10))
     thumbnail = db.Column(db.String(length=200))

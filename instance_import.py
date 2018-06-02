@@ -9,6 +9,7 @@ from werkzeug.datastructures import FileStorage
 from datetime import datetime
 
 def getjson(uri, method):
+    assert uri.islower()
     with urlopen('https://{}/api/v1/{}'.format(uri, method)) as doc:
         contenttype = doc.info()['content-type'].split(';')
         assert contenttype[0] == 'application/json'
