@@ -1,16 +1,10 @@
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from flask import Flask
 from flask_apscheduler import APScheduler
 from flask_sqlalchemy import SQLAlchemy
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 
 app = Flask("emojodb")
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
-app.config['UPLOADED_PHOTOS_DEST'] = 'emojodb'
-app.config['SCHEDULER_API_ENABLED'] = True
-app.config['SCHEDULER_JOBSTORES'] = {
-    'default': SQLAlchemyJobStore(url='sqlite:///flask_context.db')
-}
+import config
 
 def refresh_all_instances():
 	from models import Instance
