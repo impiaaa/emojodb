@@ -30,5 +30,5 @@ class Instance(db.Model):
     version = db.Column(db.String(length=10))
     thumbnail = db.Column(db.String(length=200))
     
-    emoji = db.relationship('Emoji', secondary=instanceHasEmoji, lazy='select', backref=db.backref('instances', lazy=True))
+    emoji = db.relationship('Emoji', secondary=instanceHasEmoji, lazy='select', backref=db.backref('instances', lazy=True, order_by='Instance.uri'), order_by='Emoji.shortcode')
 

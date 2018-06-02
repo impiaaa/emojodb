@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block title %} - {{ emoji.shortcode }}{% endblock title %}
+{% block body %}
+<header class="emoji">
+<div class="preview">
+<img src="{{ emoji.imgsrc }}">
+</div>
+<h2>:{{ emoji.shortcode }}:</h2>
+</header>
+<p style="clear: both">
+Available on:
+</p>
+<ul class="instancelist">
+{% for instance in emoji.instances %}
+<li class="instance">
+<a href="{{ url_for('instancesearch', instance=instance.uri) }}">
+{{ instance.uri }}
+</a>
+</li>
+{% endfor %}
+</ul>
+{% endblock body %}
+

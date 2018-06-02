@@ -3,10 +3,10 @@
 {% block body %}
 <header class="instance">
 <h2>{{ instance.title }}</h2>
-<div style="float: left">
+<div class="preview">
 <a href="https://{{ instance.uri }}">
 {% if instance.thumbnail -%}
-<img src={{ instance.thumbnail }} style="width: 300px">
+<img src={{ instance.thumbnail }}>
 {% else %}
 {{ instance.uri }}
 {% endif %}
@@ -18,10 +18,14 @@
 {% for emoji in instance.emoji %}
 <div class="emoji">
 <dt>
+<a href="{{ url_for('emoji', id=emoji.id) }}">
 <img src="{{ emoji.imgsrc }}" alt=":{{ emoji.shortcode }}:">
+</a>
 </dt>
 <dd>
+<a href="{{ url_for('emoji', id=emoji.id) }}">
 :{{ emoji.shortcode }}:
+</a>
 </dd>
 </div>
 {% endfor %}

@@ -33,3 +33,30 @@ a:hover {
     display: table-cell;
 }
 
+header .preview {
+    float: left;
+}
+
+header .preview img {
+    width: 100%;
+    height: auto;
+}
+
+.instance .preview {
+    max-width: 300px;
+}
+
+.emoji .preview {
+    max-width: 100px;
+}
+
+dl {
+    clear: both;
+}
+
+@media (max-width: 500px) {
+    .instance .preview {
+        float: none;
+    }
+}
+

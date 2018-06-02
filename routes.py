@@ -25,3 +25,9 @@ def instancesearch(instance):
 def instanceredir():
     return redirect(url_for('instancesearch', instance=request.form['instance']))
 
+@app.route('/emoji/<int:id>')
+def emoji(id):
+    emoji = Emoji.query.filter_by(id=id).first()
+    if emoji is None: abort(404)
+    return render_template('emoji.html', emoji=emoji)
+
