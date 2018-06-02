@@ -19,5 +19,11 @@ Available on:
 </li>
 {% endfor %}
 </ul>
+{% if similar %}
+<p>
+Also known as:
+</p>
+{% from 'emojilist.html' import emojilist %}
+{{ emojilist(similar) }}
+{% endif %}
 {% endblock body %}
-

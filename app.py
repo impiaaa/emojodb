@@ -14,11 +14,13 @@ app.config['SCHEDULER_JOBSTORES'] = {
 
 def refresh_all_instances():
 	from models import Instance
-	from instance_import import import_instance
+	from instance_import import getInstanceEmoji, getInstanceInfo, startGetInstanceEmojiTask
 	with db.app.app_context():
 		for instance in Instance.query.all():
-			try: import_instance(instance.uri)
-			except Exception as e: print(e)
+			if instance.pending: startGetInstanceEmojiTask(instance.uri)
+			else:
+				try: getInstanceEmoji(getInstanceInfo(instance.uri))
+				except Exception as e: print(e)
 
 app.config['JOBS'] = [
 	{

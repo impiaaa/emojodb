@@ -1,4 +1,4 @@
-import click, imagehash, json, os, tempfile
+import apscheduler, click, imagehash, json, os, tempfile
 from app import app, db, uploaded_photos
 from models import Emoji, Instance, HASH_LENGTH, instanceHasEmoji
 from PIL import Image
@@ -64,7 +64,7 @@ def getInstanceEmoji(instanceOrUri):
             print(e)
             continue
         fullpath = os.path.join(uploaded_photos.config.destination, filename)
-        hash = imagehash.average_hash(Image.open(fullpath), hash_size=HASH_LENGTH).hash
+        hash = imagehash.whash(Image.open(fullpath).convert('RGBA'), hash_size=HASH_LENGTH).hash
         
         emoji = Emoji.query.filter_by(shortcode=emojidata['shortcode'], hash=hash).first()
         if emoji is None:
@@ -107,3 +107,14 @@ def getInstanceEmoji(instanceOrUri):
 def getInstanceEmojiWithContext(instance):
     with db.app.app_context():
         getInstanceEmoji(instance)
+
+def startGetInstanceEmojiTask():
+    from app import scheduler
+    try:
+        scheduler.add_job(id='getInstanceEmoji:'+uri,
+                          func=getInstanceEmojiWithContext,
+                          args=[uri],
+                          trigger='date',
+                          max_instances=1)
+    except apscheduler.jobstores.base.ConflictingIdError:
+        pass

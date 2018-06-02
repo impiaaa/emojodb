@@ -1,6 +1,6 @@
 from app import db, uploaded_photos
 
-HASH_LENGTH = 8
+HASH_LENGTH = 16
 
 instanceHasEmoji = db.Table('instanceHasEmoji',
     db.Column('emoji_id', db.Integer, db.ForeignKey('emoji.id'), primary_key=True),
