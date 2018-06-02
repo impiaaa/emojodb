@@ -1,4 +1,4 @@
-import jinja2
+import apscheduler, jinja2
 from app import app, db
 from bleach import clean
 from flask import abort, redirect, render_template, request, url_for
@@ -16,15 +16,32 @@ def index():
     instances = Instance.query.all()
     return render_template('index.html', instances=instances)
 
-@app.route('/instance/<instance>')
-def instancesearch(instance):
-    instance = Instance.query.filter_by(uri=instance).first()
-    if instance is None: abort(404)
+@app.route('/instance/<uri>')
+def instancesearch(uri):
+    instance = Instance.query.filter_by(uri=uri).first()
+    if instance is None:
+        from instance_import import getInstanceInfo
+        try:
+            instance = getInstanceInfo(uri)
+        except Exception as e:
+            print(e)
+            abort(404)
+    if instance.pending:
+        from instance_import import getInstanceEmojiWithContext
+        from app import scheduler
+        try:
+            scheduler.add_job(id='getInstanceEmoji:'+instance.uri,
+                              func=getInstanceEmojiWithContext,
+                              args=[instance.uri],
+                              trigger='date',
+                              max_instances=1)
+        except apscheduler.jobstores.base.ConflictingIdError:
+            pass
     return render_template('instance.html', instance=instance)
 
 @app.route('/instance', methods=['POST'])
 def instanceredir():
-    return redirect(url_for('instancesearch', instance=request.form['instance']))
+    return redirect(url_for('instancesearch', uri=request.form['instance']))
 
 @app.route('/emoji/<int:id>')
 def emoji(id):

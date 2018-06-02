@@ -13,7 +13,7 @@ Available on:
 <ul class="instancelist">
 {% for instance in emoji.instances %}
 <li class="instance">
-<a href="{{ url_for('instancesearch', instance=instance.uri) }}">
+<a href="{{ url_for('instancesearch', uri=instance.uri) }}">
 {{ instance.uri }}
 </a>
 </li>

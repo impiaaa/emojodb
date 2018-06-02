@@ -25,7 +25,9 @@ app.config['JOBS'] = [
 		'id': 'refresh_all_instances',
 		'func': refresh_all_instances,
 		'trigger': 'interval',
-		'days': 1
+		'days': 1,
+		'replace_existing': True,
+		'max_instances': 1
 	}
 ]
 
@@ -34,10 +36,11 @@ db = SQLAlchemy(app)
 uploaded_photos = UploadSet('photos', IMAGES)
 configure_uploads(app, uploaded_photos)
 
+scheduler = APScheduler()
+scheduler.init_app(app)
+
 @app.before_first_request
 def init():
-	scheduler = APScheduler()
-	scheduler.init_app(app)
 	scheduler.start()
 
 import routes

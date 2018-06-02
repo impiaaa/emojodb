@@ -29,6 +29,7 @@ class Instance(db.Model):
     email = db.Column(db.String(length=80))
     version = db.Column(db.String(length=10))
     thumbnail = db.Column(db.String(length=200))
+    pending = db.Column(db.Boolean)
     
     emoji = db.relationship('Emoji', secondary=instanceHasEmoji, lazy='select', backref=db.backref('instances', lazy=True, order_by='Instance.uri'), order_by='Emoji.shortcode')
 

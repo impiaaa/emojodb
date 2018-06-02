@@ -14,7 +14,12 @@
 </div>
 {{ instance.description|strip }}
 </header>
+{% if instance.pending %}
+<p style="clear: both">
+Currently fetching emoji! Please check back in a few.
+</p>
+{% else %}
 {% from 'emojilist.html' import emojilist %}
 {{ emojilist(instance.emoji, clear=True) }}
+{% endif %}
 {% endblock body %}
-

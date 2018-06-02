@@ -21,7 +21,7 @@ def getInstanceInfo(uri):
     
     instance = Instance.query.filter_by(uri=uri).first()
     if instance is None:
-        instance = Instance()
+        instance = Instance(pending=True)
         print("Adding instance to DB")
         db.session.add(instance)
     for k, v in instancedata.items():
@@ -34,12 +34,18 @@ def getInstanceInfo(uri):
 @app.cli.command()
 @click.argument("uri")
 def import_instance(uri):
-    instance = getInstanceInfo(uri)
-    print("Set instance info, loading emoji")
+    getInstanceEmoji(getInstanceInfo(uri))
+
+def getInstanceEmoji(instanceOrUri):
+    if isinstance(instanceOrUri, Instance):
+        instance = instanceOrUri
+    else:
+        instance = Instance.query.filter_by(uri=instanceOrUri).first()
+    print("Loading emoji for {}".format(instance.uri))
     
     addedEmoji = []
     
-    for emojidata in getjson(uri, 'custom_emojis'):
+    for emojidata in getjson(instance.uri, 'custom_emojis'):
         print("Loading :{}:".format(emojidata['shortcode']))
         with urlopen(emojidata['url']) as doc:
             headers = doc.info()
@@ -84,5 +90,12 @@ def import_instance(uri):
             print("Removing :{}:".format(emoji.shortcode))
             db.session.delete(emoji)
     
+    instance.pending = False
+    
     db.session.commit()
+    
+    return addedEmoji
 
+def getInstanceEmojiWithContext(instance):
+    with db.app.app_context():
+        getInstanceEmoji(instance)
