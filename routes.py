@@ -46,13 +46,13 @@ def emoji(id):
                    .all()
     return render_template('emoji.html', emoji=emoji, similar=similar)
 
-@app.route('/emoji', methods=['POST'])
+@app.route('/emoji')
 def emojisearch():
     emoji = db.session.query(Emoji)\
-                      .filter(Emoji.shortcode.ilike(text("'%' || :query || '%'"))).params(query=request.form['query'])\
+                      .filter(Emoji.shortcode.ilike(text("'%' || :query || '%'"))).params(query=request.args['query'])\
                       .order_by(Emoji.shortcode)\
                       .limit(100)\
                       .all()
     if len(emoji) == 1: return redirect(url_for('emoji', id=emoji[0].id))
-    else: return render_template('emojisearch.html', emoji=emoji, shortcode=request.form['query'])
+    else: return render_template('emojisearch.html', emoji=emoji, shortcode=request.args['query'])
 

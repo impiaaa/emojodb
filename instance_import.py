@@ -37,6 +37,24 @@ def getInstanceInfo(uri):
 def import_instance(uri):
     getInstanceEmoji(getInstanceInfo(uri))
 
+rgb2xyz = (
+    0.412453, 0.357580, 0.180423, 0,
+    0.212671, 0.715160, 0.072169, 0,
+    0.019334, 0.119193, 0.950227, 0 )
+
+def process(im):
+    im = im.convert('RGBA')
+    rgb, alpha = im.convert('RGB'), im.getchannel('A')
+    xyz = rgb.convert('RGB', rgb2xyz)
+    channels = xyz.split()+(alpha,)
+    im2 = Image.new('L', tuple(w*2 for w in im.size))
+    for i, c in enumerate(channels):
+        im2.paste(c, box=(im.size[0]*(i%2), im.size[1]*(i//2)))
+    return im2
+
+def gethash(fname):
+    return imagehash.whash(process(Image.open(fname)), hash_size=HASH_LENGTH).hash
+
 def getInstanceEmoji(instanceOrUri):
     if isinstance(instanceOrUri, Instance):
         instance = instanceOrUri
@@ -64,7 +82,7 @@ def getInstanceEmoji(instanceOrUri):
             print(e)
             continue
         fullpath = os.path.join(uploaded_photos.config.destination, filename)
-        hash = imagehash.whash(Image.open(fullpath).convert('RGBA'), hash_size=HASH_LENGTH).hash
+        hash = gethash(fullpath)
         
         emoji = Emoji.query.filter_by(shortcode=emojidata['shortcode'], hash=hash).first()
         if emoji is None:
@@ -108,7 +126,7 @@ def getInstanceEmojiWithContext(instance):
     with db.app.app_context():
         getInstanceEmoji(instance)
 
-def startGetInstanceEmojiTask():
+def startGetInstanceEmojiTask(uri):
     from app import scheduler
     try:
         scheduler.add_job(id='getInstanceEmoji:'+uri,
