@@ -1,5 +1,5 @@
 bleach
+Flask-APScheduler
 Flask-SQLAlchemy
 Flask-Uploads
 ImageHash
-
