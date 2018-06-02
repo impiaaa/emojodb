@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 
 app = Flask("emojodb")
-import config
+app.config.from_object('config')
 
 def refresh_all_instances():
 	from models import Instance
