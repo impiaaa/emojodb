@@ -59,3 +59,6 @@ def emojisearch():
     if len(emoji) == 1: return redirect(url_for('emoji', id=emoji[0].id))
     else: return render_template('emojisearch.html', emoji=emoji, shortcode=request.args['query'])
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
