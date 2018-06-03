@@ -3,3 +3,5 @@ boto3
 Flask-APScheduler ~= 1.8.0
 Flask-SQLAlchemy ~= 2.3.2
 ImageHash ~= 4.0
+psycopg2
+

@@ -33,6 +33,7 @@ scheduler.init_app(app)
 
 @app.before_first_request
 def init():
+	db.create_all()
 	scheduler.start()
 
 import routes
