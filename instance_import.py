@@ -1,7 +1,7 @@
 import apscheduler, boto3, click, imagehash, json, os, tempfile
-from app import app, db
+from application import app, db, Emoji, Instance, HASH_LENGTH, instanceHasEmoji
 from datetime import datetime
-from models import Emoji, Instance, HASH_LENGTH, instanceHasEmoji
+#from models import Emoji, Instance, HASH_LENGTH, instanceHasEmoji
 from PIL import Image
 from urllib.error import URLError
 from urllib.request import urlopen
@@ -133,7 +133,7 @@ def getInstanceEmojiWithContext(instance):
         getInstanceEmoji(instance)
 
 def startGetInstanceEmojiTask(uri):
-    from app import scheduler
+    from application import scheduler
     try:
         scheduler.add_job(id='getInstanceEmoji:'+uri,
                           func=getInstanceEmojiWithContext,
