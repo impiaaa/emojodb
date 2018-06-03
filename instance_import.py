@@ -1,5 +1,5 @@
 import apscheduler, boto3, click, imagehash, json, os, tempfile
-from app import app, db, uploaded_photos
+from app import app, db
 from datetime import datetime
 from models import Emoji, Instance, HASH_LENGTH, instanceHasEmoji
 from PIL import Image

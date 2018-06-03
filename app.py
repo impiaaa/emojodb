@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask("emojodb")
 app.config.from_object('config')
+app.debug - True
 
 def refresh_all_instances():
 	from models import Instance
@@ -35,6 +36,8 @@ scheduler.init_app(app)
 def init():
 	db.create_all()
 	scheduler.start()
+
+application = app
 
 import routes
 from instance_import import import_instance
